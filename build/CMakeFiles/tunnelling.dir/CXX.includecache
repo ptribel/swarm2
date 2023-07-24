@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/p/SR_Project_H414/src/tunnelling.cpp
+tunnelling.h
+/home/p/SR_Project_H414/src/tunnelling.h
+
+/home/p/SR_Project_H414/src/tunnelling.h
+argos3/core/simulator/simulator.h
+-
+argos3/core/simulator/space/space.h
+-
+argos3/plugins/simulator/entities/cylinder_entity.h
+-
+argos3/plugins/simulator/entities/light_entity.h
+-
+argos3/plugins/simulator/entities/led_entity.h
+-
+argos3/plugins/simulator/media/led_medium.h
+-
+argos3/core/simulator/loop_functions.h
+-
+argos3/plugins/simulator/entities/box_entity.h
+-
+argos3/plugins/robots/foot-bot/simulator/footbot_entity.h
+-
+argos3/core/utility/math/rng.h
+-
+argos3/core/utility/math/angles.h
+-
+fstream
+-
+algorithm
+-
+cstring
+-
+cerrno
+-
+math.h
+-
+
