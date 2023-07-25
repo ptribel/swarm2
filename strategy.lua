@@ -22,11 +22,66 @@ function is_in_target()
 	return in_target == 4
 end
 
+-- Gets the index of the captor which detects the brightest source of light (the food source).
+function get_brightest_index()
+	local brightest_source = 0
+	local brightest_index = 0
+	for i = 1, 24 do
+		if robot.light[i].value > brightest_source then
+			brightest_source = robot.light[i].value
+			brightest_index = i
+		end
+	end
+	return brightest_index
+end
+
+-- Returns the distance, angle and blue value of the closest robot that sees the light bulb
+function get_closest_blue_neighbor()
+	local neighbors = #robot.colored_blob_omnidirectional_camera
+	local target = {distance = math.maxinteger, angle = math.maxinteger, red = math.maxinteger}
+	if neighbors > 0 then
+		for i = 1, neighbors do
+			if robot.colored_blob_omnidirectional_camera[i].color.red > 0 and robot.colored_blob_omnidirectional_camera[i].distance < target.distance then
+				target = {distance = robot.colored_blob_omnidirectional_camera[i].distance, angle = robot.colored_blob_omnidirectional_camera[i].angle, red = robot.colored_blob_omnidirectional_camera[i].color.red}
+			end
+		end
+	end
+	return target
+end
+
 
 --[[ This function is executed at each time step
      It must contain the logic of your controller ]]
 function step()
-
+	if (not is_in_target()) then
+		local brightest_index = get_brightest_index()
+		if (brightest_index ~= 0) then -- Signal that you see the light
+			local random_speed = robot.random.uniform_int(-5, 5)
+			local random_angular_speed = robot.random.uniform_int(-5, 5)
+			drive(random_speed, random_angular_speed)
+			robot.leds.set_single_color(13, 255, 0, 0)
+		else -- Target the closest blue robot, hoping that you see the light
+			robot.leds.set_single_color(13, 0, 0, 0)
+			local closest_blue_neighbor = get_closest_blue_neighbor()
+			if (closest_blue_neighbor.angle < math.maxinteger) then
+				if (closest_blue_neighbor.angle > 0.2) then
+					drive(0, 4)
+				else
+					if (closest_blue_neighbor.angle < -0.2) then
+						drive(0, -4)
+					else
+						drive(SPEED, 0)
+					end
+				end
+			else -- Drive randomly
+				local random_angular_speed = robot.random.uniform_int(-5, 5)
+				drive(SPEED-random_angular_speed, random_angular_speed)
+			end
+		end
+	else
+		robot.leds.set_single_color(13, 0, 255, 0)
+		drive(0, 0)
+	end
 end
 
 --[[ This function is executed every time you press the 'reset'
