@@ -1,5 +1,8 @@
-SPEED = 15
+SPEED = 10
 TARGET = 0
+RED = 0
+GREEN = 0
+BLUE = 0
 
 -- This function is executed every time you press the 'execute' button 
 function init()
@@ -51,7 +54,6 @@ end
 
 
 function drive_to_blue_neighbor()
-	robot.leds.set_single_color(13, 0, 0, 0)
 	local closest_blue_neighbor = get_closest_blue_neighbor()
 	if (closest_blue_neighbor.angle < math.maxinteger) then
 		if (closest_blue_neighbor.angle > 0.2) then
@@ -77,11 +79,17 @@ function count_neighbors_proportion()
 	local right_proportion = 0
 	if neighbors > 0 then
 		for i = 1, neighbors do
-			if robot.colored_blob_omnidirectional_camera[i].color.blue > 0 then
-				if robot.colored_blob_omnidirectional_camera.angle[i] > 0.1 then
-					left_count = left_count + 1
+			if robot.colored_blob_omnidirectional_camera[i].angle > 0.1 then
+				if robot.colored_blob_omnidirectional_camera[i].color.blue > 0 then
+					left_count = left_count + 5
 				else
-					if robot.colored_blob_omnidirectional_camera.angle[i] < -0.1 then
+					left_count = left_count + 1
+				end
+			else
+				if robot.colored_blob_omnidirectional_camera[i].angle < -0.1 then
+					if robot.colored_blob_omnidirectional_camera[i].color.blue > 0 then
+						right_count = right_count + 5
+					else
 						right_count = right_count + 1
 					end
 				end
@@ -94,11 +102,21 @@ function count_neighbors_proportion()
 end
 
 function drive_away_from_light()
-	local random_speed = robot.random.uniform_int(-5, 5)
-	local random_angular_speed = robot.random.uniform_int(-5, 5)
+	BLUE = 255
 	local proportions = count_neighbors_proportion()
-	drive(random_speed, random_angular_speed)
-	robot.leds.set_single_color(13, 0, 0, 255)
+	local alpha = 12 + (proportions.left_proportion - proportions.right_proportion)
+	local brightest_index = get_brightest_index()
+	local angular_speed = robot.random.uniform_int(-5, 5)
+	if (brightest_index ~= 0) then
+		angular_speed = brightest_index - alpha
+		if (angular_speed > 0) then
+			drive(SPEED-angular_speed, angular_speed)
+		else
+			drive(SPEED + angular_speed, angular_speed)
+		end
+	else
+		drive(SPEED+angular_speed, angular_speed)
+	end
 end
 
 --[[ This function is executed at each time step
@@ -109,12 +127,18 @@ function step()
 		if (brightest_index ~= 0) then -- Signal that you see the light
 			drive_away_from_light()
 		else -- Target the closest blue robot, hoping that you see the light
-			drive_to_blue_neighbor()
+			if (BLUE == 0) then
+				drive_to_blue_neighbor()
+			else
+				BLUE = 0
+				drive(SPEED, 0)
+			end
 		end
 	else
-		robot.leds.set_single_color(13, 0, 255, 0)
+		GREEN = 255
 		drive(0, 0)
 	end
+	robot.leds.set_single_color(13, RED, GREEN, BLUE)
 end
 
 --[[ This function is executed every time you press the 'reset'
