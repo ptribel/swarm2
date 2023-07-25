@@ -26,7 +26,7 @@ function drive(forward, angular)
 end
 
 function random_walk()
-	local speed = robot.random.uniform_int(-SPEED, SPEED)
+	local speed = robot.random.uniform_int(0, SPEED)
 	local angular_speed = robot.random.uniform_int(-SPEED, SPEED)
 	drive(speed, angular_speed)
 end
@@ -93,7 +93,7 @@ function drive_out_of_the_source()
             drive_to_blue_target()
         else
 				BLUE = 0
-            drive(SPEED, 0)
+            random_walk()
         end
     end
 end
@@ -133,6 +133,10 @@ function drive_to_target()
 	drive(SPEED, robot.random.uniform_int(0, 0))
 end
 
+function empty_target()
+
+end
+
 --[[ This function is executed at each time step
      It must contain the logic of your controller ]]
 function step()
@@ -145,7 +149,7 @@ function step()
 				GREEN = 255
 				BLUE = 255
 	        robot.leds.set_all_colors(RED, GREEN, BLUE)
-        	  drive(SPEED, 0)
+        	  empty_target()
 		  else
 			   BLUE = 0
 				drive_to_target()

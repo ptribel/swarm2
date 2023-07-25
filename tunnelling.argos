@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <!-- To make ARGoS faster, you can set 'threads' to some number greater than 0 -->
-    <system threads="0" />
+    <system threads="4" />
     <!-- To change the random seed for each experiment repetition, you can set 'random_seed' to whatever value you like -->
     <experiment length="1000" ticks_per_second="10" random_seed="0" />
   </framework>
@@ -45,10 +45,10 @@
         <range_and_bearing implementation="medium" medium="rab" show_rays="false" />
       </sensors>
       <!-- If you want to execute ARGoS with an empty script, use this syntax -->
-      <params/>
+      <!-- params -->
       <!-- If you want to execute ARGoS with a script preloaded, use this syntax
            Note: the preloaded script does not appear in the Lua editor! (that's a TODO) -->
-      <!--params script="controller.lua" /-->
+      <params script="strategy3.lua" />
     </lua_controller>
   </controllers>
 
@@ -82,7 +82,7 @@
     <distribute>
       <position method="uniform" min="-4,1,0" max="4,3,0" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="30" max_trials="100" base_num="1">
+      <entity quantity="3" max_trials="100" base_num="1">
         <cylinder id="low" radius="0.1" height="0.15" movable="true" mass="0.1">
           <leds medium="leds">
             <led offset="0,0,0.16" anchor="origin" color="red" />
@@ -95,7 +95,7 @@
     <distribute>
       <position method="uniform" min="-4,-1,0" max="4,1,0" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="100" max_trials="100" base_num="1">
+      <entity quantity="10" max_trials="100" base_num="1">
         <cylinder id="mid" radius="0.1" height="0.15" movable="true" mass="0.1">
           <leds medium="leds">
             <led offset="0,0,0.16" anchor="origin" color="red" />
@@ -108,7 +108,7 @@
     <distribute>
       <position method="uniform" min="-4,-2.8,0" max="4,-1,0" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="150" max_trials="100" base_num="1">
+      <entity quantity="15" max_trials="100" base_num="1">
         <cylinder id="high" radius="0.1" height="0.15" movable="true" mass="0.1">
           <leds medium="leds">
             <led offset="0,0,0.16" anchor="origin" color="red" />
@@ -151,7 +151,7 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
-  <visualization>
+  <!----><visualization>
     <qt-opengl lua_editor="true">
       <camera>
 		<placements>
@@ -159,6 +159,6 @@
 		</placements>
       </camera>
     </qt-opengl>
-  </visualization>
+  </visualization><!---->
 
 </argos-configuration>
