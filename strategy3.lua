@@ -13,11 +13,14 @@ GREEN = 0
 BLUE = 0
 TARGET = 0
 SOURCE = 1
+GRABBING = false
+GRIPPED = false
 
 
 --[[ This function is executed every time you press the 'execute' button ]]
 function init()
    robot.colored_blob_omnidirectional_camera.enable()
+	robot.turret.set_position_control_mode()
 end
 
 -- Drives with linear speed $forward and angular speed $angular. If $angular > 0, then the robot goes to the left.
@@ -133,8 +136,47 @@ function drive_to_target()
 	drive(SPEED, robot.random.uniform_int(0, 0))
 end
 
-function empty_target()
+-- Returns the distance, angle and blue value of the closest red obstacle
+function get_red_obstacle()
+	local neighbors = #robot.colored_blob_omnidirectional_camera
+	local target = {distance = math.maxinteger, angle = 0, red = 0}
+	if neighbors > 0 then
+		for i = 1, neighbors do
+			if (robot.colored_blob_omnidirectional_camera[i].color.red > 0 and robot.colored_blob_omnidirectional_camera[i].distance < 19 and (robot.colored_blob_omnidirectional_camera[i].angle < 0.2 and robot.colored_blob_omnidirectional_camera[i].angle > -0.2)) then
+				target = {distance = robot.colored_blob_omnidirectional_camera[i].distance, angle = robot.colored_blob_omnidirectional_camera[i].angle, red = robot.colored_blob_omnidirectional_camera[i].color.red}
+			end
+		end
+	end
+	return target
+end
 
+function grab_and_remove_obstacle()
+	if (not GRABBING) then
+		RED_OBSTACLE = get_red_obstacle()
+	end
+	if (RED_OBSTACLE.red > 0) then
+		GRABBING = true
+		drive(0, 0)
+		robot.turret.set_rotation(RED_OBSTACLE.angle)
+		if ((robot.turret.rotation - RED_OBSTACLE.angle < 0.1 and robot.turret.rotation - RED_OBSTACLE.angle > -0.1) or GRIPPED) then
+			GRIPPED = true
+			robot.gripper.lock_positive()
+			local angle_opposite = math.pi/2 - RED_OBSTACLE.angle
+			robot.turret.set_rotation(angle_opposite)
+			if (robot.turret.rotation - angle_opposite < 0.1 and robot.turret.rotation - angle_opposite > -0.1) then
+				robot.gripper.unlock()
+				GRABBING = false
+				GRIPPED = false
+			end
+		end
+	end
+	-- check if obstacle is in front: check if red is in front with distance < 19 (check exact)
+	-- if true: stop the robot
+	-- 			put the turret at the angle of the obstacle
+	--				grab the obstacle
+	--				put the turret at the opposite of the angle
+	--				release the obstacle
+	--				drive again
 end
 
 --[[ This function is executed at each time step
@@ -144,18 +186,20 @@ function step()
         drive_out_of_the_source()
 		  robot.leds.set_single_color(13, RED, GREEN, BLUE)
     else
-			robot.leds.set_single_color(13, 0, 0, 0)
-	 	  if (is_in_target()) then
-				GREEN = 255
-				BLUE = 255
-	        robot.leds.set_all_colors(RED, GREEN, BLUE)
-        	  empty_target()
-		  else
-			   BLUE = 0
-				drive_to_target()
-				GREEN = 0
-				robot.leds.set_single_color(6, RED, GREEN, BLUE)
-				robot.leds.set_single_color(7, RED, GREEN, BLUE)
+			grab_and_remove_obstacle()
+			if (not GRABBING) then
+				robot.leds.set_single_color(13, 0, 0, 0)
+	 	  		if (is_in_target()) then
+					GREEN = 255
+					BLUE = 255
+	        		robot.leds.set_all_colors(RED, GREEN, BLUE)
+		  		else
+			   	BLUE = 0
+					drive_to_target()
+					GREEN = 0
+					robot.leds.set_single_color(6, RED, GREEN, BLUE)
+					robot.leds.set_single_color(7, RED, GREEN, BLUE)
+				end
 		  end
     end
 end
