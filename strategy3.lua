@@ -161,10 +161,11 @@ function grab_and_remove_obstacle()
 		if ((robot.turret.rotation - RED_OBSTACLE.angle < 0.1 and robot.turret.rotation - RED_OBSTACLE.angle > -0.1) or GRIPPED) then
 			GRIPPED = true
 			robot.gripper.lock_positive()
-			local angle_opposite = math.pi/2 + RED_OBSTACLE.angle
+			local angle_opposite = math.pi/2 
 			if (RED_OBSTACLE.angle < 0) then
-				angle_opposite = -math.pi/2 - RED_OSBTALE.angle
+				angle_opposite = -math.pi/2 
 			end
+			drive(-5, 0)
 			robot.turret.set_rotation(angle_opposite)
 			if (robot.turret.rotation - angle_opposite < 0.1 and robot.turret.rotation - angle_opposite > -0.1) then
 				robot.gripper.unlock()
