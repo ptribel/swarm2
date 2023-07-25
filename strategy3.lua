@@ -12,6 +12,7 @@ RED = 0
 GREEN = 0
 BLUE = 0
 TARGET = 0
+SOURCE = 1
 
 
 --[[ This function is executed every time you press the 'execute' button ]]
@@ -24,13 +25,19 @@ function drive(forward, angular)
 	robot.wheels.set_velocity(forward - angular, forward + angular)
 end
 
+function random_walk()
+	local speed = robot.random.uniform_int(-SPEED, SPEED)
+	local angular_speed = robot.random.uniform_int(-SPEED, SPEED)
+	drive(speed, angular_speed)
+end
+
 -- Returns the distance, angle and blue value of the closest blue robot
 function get_blue_target()
 	local neighbors = #robot.colored_blob_omnidirectional_camera
-	local target = {distance = math.maxinteger, angle = 0, blue = 0}
+	local target = {distance = math.maxinteger, angle = 0, blue = BLUE}
 	if neighbors > 0 then
 		for i = 1, neighbors do
-			if (robot.colored_blob_omnidirectional_camera[i].color.blue > 0 and robot.colored_blob_omnidirectional_camera[i].color.blue >= target.blue and robot.colored_blob_omnidirectional_camera[i].distance < target.distance) then
+			if (robot.colored_blob_omnidirectional_camera[i].color.blue > target.blue and robot.colored_blob_omnidirectional_camera[i].distance < target.distance) then
 				target = {distance = robot.colored_blob_omnidirectional_camera[i].distance, angle = robot.colored_blob_omnidirectional_camera[i].angle, blue = robot.colored_blob_omnidirectional_camera[i].color.blue}
 			end
 		end
@@ -52,37 +59,40 @@ function get_brightest_index()
 end
 
 function drive_away_from_light_source()
-	if (BRIGHTEST_INDEX ~= 12) then
-		drive(4, SPEED)
+	if (BRIGHTEST_INDEX ~= 12 and BRIGHTEST_INDEX ~= 13) then
+		drive(1, SPEED)
 	else
-		drive(SPEED, 0)
+		drive(SPEED, robot.random.uniform_int(-1, 1))
 	end
 end
 
-function drive_to_blue_target(target)
-    if (target.angle < -0.2) then
-        drive(1, 4)
+function drive_to_blue_target()
+    if (BLUE_TARGET.angle < -0.2) then
+        drive(0, -4)
     else
-        if (target.angle > 0.2) then
-            drive(1, -4)
+        if (BLUE_TARGET.angle > 0.2) then
+            drive(0, 4)
         else
-            drive(SPEED, 0)
+            drive(0, 0)--random_walk()
         end
     end
 end
 
-function drive_to_the_target()
+function drive_out_of_the_source()
     BRIGHTEST_INDEX = get_brightest_index()
-    if (brightest_index ~= 0) then
-        BLUE = 255
+    if (BRIGHTEST_INDEX ~= 0) then
+        BLUE = 245
         drive_away_from_light_source()
     else
-        local blue_target = get_blue_target()
-        if (blue_target.distance < math.maxinteger) then
-            BLUE = blue_target.blue - 10
-            drive_to_blue_target(blue_target)
+        BLUE_TARGET = get_blue_target()
+        if (BLUE_TARGET.distance < math.maxinteger) then
+            BLUE = BLUE_TARGET.blue - 10
+				if (BLUE < 0) then
+					BLUE = 0
+				end
+            drive_to_blue_target()
         else
-            BLUE = 0
+				BLUE = 0
             drive(SPEED, 0)
         end
     end
@@ -98,16 +108,52 @@ function is_in_target()
 	return in_target == 4
 end
 
+function is_in_source()
+	local in_source = 0
+	for i = 1, 4 do
+	   if(robot.motor_ground[i].value == SOURCE) then
+	      in_source = in_source + 1
+	    end
+	end
+	return in_source == 4
+end
+
+function drive_to_target()
+	BLUE_TARGET = get_blue_target()
+   if (BLUE_TARGET.distance < math.maxinteger) then
+      BLUE = BLUE_TARGET.blue - 1
+		if (BLUE < 0) then
+			BLUE = 0
+		end
+      	drive_to_blue_target()
+   else
+		BLUE = 255
+      drive(SPEED, 0)
+   end
+	drive(SPEED, robot.random.uniform_int(0, 0))
+end
+
 --[[ This function is executed at each time step
      It must contain the logic of your controller ]]
 function step()
-    if (not is_in_target()) then
-        drive_to_the_target()
+    if (is_in_source()) then
+        drive_out_of_the_source()
+		  robot.leds.set_single_color(13, RED, GREEN, BLUE)
     else
-        GREEN = 255
-        drive(0, 0)
+			robot.leds.set_single_color(13, 0, 0, 0)
+	 	  if (is_in_target()) then
+				GREEN = 255
+				BLUE = 255
+	        robot.leds.set_all_colors(RED, GREEN, BLUE)
+        	  drive(SPEED, 0)
+		  else
+			   BLUE = 0
+				drive_to_target()
+				GREEN = 0
+				robot.leds.set_single_color(6, RED, GREEN, BLUE)
+				robot.leds.set_single_color(7, RED, GREEN, BLUE)
+		  end
     end
-    robot.leds.set_single_color(13, RED, GREEN, BLUE)
 end
 
 
