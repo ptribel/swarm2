@@ -69,7 +69,7 @@
       <position method="uniform" min="-4,3,0" max="4,5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <!-- You can play with the number of tunnelling robots by changing the ’quantity’ attribute -->
-      <entity quantity="3" max_trials="100" base_num="1">
+      <entity quantity="10" max_trials="100" base_num="1">
         <foot-bot id="fb" omnidirectional_camera_aperture="80" rab_range="1.5" >
           <controller config="controller" />
         </foot-bot>
@@ -108,7 +108,7 @@
     <distribute>
       <position method="uniform" min="-4,-2.8,0" max="4,-1,0" />
       <orientation method="constant" values="0,0,0" />
-      <entity quantity="15" max_trials="100" base_num="1">
+      <entity quantity="150" max_trials="100" base_num="1">
         <cylinder id="high" radius="0.1" height="0.15" movable="true" mass="0.1">
           <leds medium="leds">
             <led offset="0,0,0.16" anchor="origin" color="red" />

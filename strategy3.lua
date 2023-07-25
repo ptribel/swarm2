@@ -142,7 +142,7 @@ function get_red_obstacle()
 	local target = {distance = math.maxinteger, angle = 0, red = 0}
 	if neighbors > 0 then
 		for i = 1, neighbors do
-			if (robot.colored_blob_omnidirectional_camera[i].color.red > 0 and robot.colored_blob_omnidirectional_camera[i].distance < 19 and (robot.colored_blob_omnidirectional_camera[i].angle < 0.2 and robot.colored_blob_omnidirectional_camera[i].angle > -0.2)) then
+			if (robot.colored_blob_omnidirectional_camera[i].color.red > 0 and robot.colored_blob_omnidirectional_camera[i].distance < 19 and (robot.colored_blob_omnidirectional_camera[i].angle < math.pi/2 and robot.colored_blob_omnidirectional_camera[i].angle > -math.pi/2)) then
 				target = {distance = robot.colored_blob_omnidirectional_camera[i].distance, angle = robot.colored_blob_omnidirectional_camera[i].angle, red = robot.colored_blob_omnidirectional_camera[i].color.red}
 			end
 		end
@@ -161,7 +161,10 @@ function grab_and_remove_obstacle()
 		if ((robot.turret.rotation - RED_OBSTACLE.angle < 0.1 and robot.turret.rotation - RED_OBSTACLE.angle > -0.1) or GRIPPED) then
 			GRIPPED = true
 			robot.gripper.lock_positive()
-			local angle_opposite = math.pi/2 - RED_OBSTACLE.angle
+			local angle_opposite = math.pi/2 + RED_OBSTACLE.angle
+			if (RED_OBSTACLE.angle < 0) then
+				angle_opposite = -math.pi/2 - RED_OSBTALE.angle
+			end
 			robot.turret.set_rotation(angle_opposite)
 			if (robot.turret.rotation - angle_opposite < 0.1 and robot.turret.rotation - angle_opposite > -0.1) then
 				robot.gripper.unlock()
