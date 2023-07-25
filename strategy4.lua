@@ -14,6 +14,7 @@ BLUE = 0
 TARGET = 0
 SOURCE = 1
 GRABBING = false
+STARTING_DELAY = 50
 GRIPPED = false
 
 
@@ -62,10 +63,17 @@ function get_brightest_index()
 end
 
 function drive_away_from_light_source()
+	if (STARTING_DELAY > 0) then
+		STARTING_DELAY = STARTING_DELAY - 1
+	end
 	if (BRIGHTEST_INDEX ~= 12 and BRIGHTEST_INDEX ~= 13) then
 		drive(1, SPEED)
 	else
-		drive(SPEED, robot.random.uniform_int(-1, 1))
+		if (STARTING_DELAY == 0) then
+			drive(SPEED, robot.random.uniform_int(-1, 1))
+		else
+			drive(0, 0)
+		end
 	end
 end
 
@@ -76,7 +84,7 @@ function drive_to_blue_target()
         if (BLUE_TARGET.angle > 0.2) then
             drive(0, 4)
         else
-            drive(0, 0)--random_walk()
+            drive(SPEED, 0)--random_walk()
         end
     end
 end
