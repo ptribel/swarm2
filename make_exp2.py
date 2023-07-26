@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 
 def create_experimental_setup(script_filepath, algo_name, nb_ants, seed):
     # Load the XML file
-    tree = ET.parse('tunnelling.argos')
+    tree = ET.parse('tunnelling_1.argos')
     root = tree.getroot()
 
     def change_seed(seed):
@@ -30,7 +30,7 @@ def create_experimental_setup(script_filepath, algo_name, nb_ants, seed):
     change_nb_ants(nb_ants)
     change_algorithm(script_filepath)
     change_output_name(algo_name, nb_ants, seed)
-    tree.write(f'tunnelling.argos')
+    tree.write(f'tunnelling_1.argos')
 
 import subprocess
 
@@ -48,11 +48,11 @@ def run_c_executable(executable_path, arguments):
 
 # Example usage
 executable_path = 'argos3'
-arguments = ['-c', 'tunnelling.argos', '--logerr-file', '/dev/null']
+arguments = ['-c', 'tunnelling_1.argos', '--logerr-file', '/dev/null']
 
-sizes = [25, 30, 35, 40, 45, 50] # [5, 7, 10, 17, 25, 37, 50, 75, 100]
+sizes = [20] # [5, 7, 10, 17, 25, 37, 50, 75, 100]
 for nb_ants in sizes:
     for seed in range(1,11):
         print(f"{nb_ants = } and {seed = }")
-        create_experimental_setup("strategy4.lua", "strategy4", nb_ants, seed)
+        create_experimental_setup("simple.lua", "simple", nb_ants, seed)
         run_c_executable(executable_path, arguments)
