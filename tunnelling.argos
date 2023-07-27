@@ -7,13 +7,13 @@
     
     <system threads="8" />
     
-    <experiment length="1000" ticks_per_second="10" random_seed="1" />
+    <experiment length="1000" ticks_per_second="10" random_seed="5" />
   </framework>
 
   
   
   
-  <loop_functions library="./build/libtunnelling" label="tunnelling" output="./experiments_settings/outputs/strategy4/size_50_seed_1.txt" />
+  <loop_functions library="./build/libtunnelling" label="tunnelling" output="./experiments_settings/outputs/strategy4/size_50_seed_5.txt" />
   
   
   
