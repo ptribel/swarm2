@@ -50,7 +50,7 @@ def run_c_executable(executable_path, arguments):
 executable_path = 'argos3'
 arguments = ['-c', 'tunnelling_1.argos', '--logerr-file', '/dev/null']
 
-sizes = list(range(5, 55, 5)) # [5, 7, 10, 17, 25, 37, 50, 75, 100]
+sizes = list(range(10, 55, 5)) # [5, 7, 10, 17, 25, 37, 50, 75, 100]
 for nb_ants in sizes:
     for seed in range(1,6):
         print(f"{nb_ants = } and {seed = }")
