@@ -13,7 +13,7 @@
   
   
   
-  <loop_functions library="./build/libtunnelling" label="tunnelling" output="./experiments_settings/outputs/simple/size_10_seed_1.txt" />
+  <loop_functions library="./build/libtunnelling" label="tunnelling" output="./experiments_settings/outputs/simple/size_5_seed_1.txt" />
   
   
   
@@ -60,7 +60,7 @@
       <position method="uniform" min="-4,3,0" max="4,5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       
-      <entity quantity="10" max_trials="100" base_num="1">
+      <entity quantity="5" max_trials="100" base_num="1">
         <foot-bot id="fb" omnidirectional_camera_aperture="80" rab_range="1.5">
           <controller config="controller" />
         </foot-bot>
