@@ -1,11 +1,3 @@
--- Use Shift + Click to select a robot
--- When a robot is selected, its variables appear in this editor
-
--- Use Ctrl + Click (Cmd + Click on Mac) to move a selected robot to a different location
-
-
-
--- Put your global variables here
 BRIGHTEST_INDEX = 0
 SPEED = 15
 RED = 0
@@ -20,7 +12,7 @@ GRIPPED = false
 
 --[[ This function is executed every time you press the 'execute' button ]]
 function init()
-   robot.colored_blob_omnidirectional_camera.enable()
+   	robot.colored_blob_omnidirectional_camera.enable()
 	robot.turret.set_position_control_mode()
 end
 
@@ -98,12 +90,12 @@ function drive_out_of_the_source()
         BLUE_TARGET = get_blue_target()
         if (BLUE_TARGET.distance < math.maxinteger) then
             BLUE = BLUE_TARGET.blue - 10
-				if (BLUE < 0) then
-					BLUE = 0
-				end
+			if (BLUE < 0) then
+				BLUE = 0
+			end
             drive_to_blue_target()
         else
-				BLUE = 0
+			BLUE = 0
             random_walk()
         end
     end
@@ -113,7 +105,7 @@ function is_in_target()
 	local in_target = 0
 	for i = 1, 4 do
 	   if(robot.motor_ground[i].value == TARGET) then
-	      in_target = in_target + 1
+	      	in_target = in_target + 1
 	    end
 	end
 	return in_target == 4
@@ -123,7 +115,7 @@ function is_in_source()
 	local in_source = 0
 	for i = 1, 4 do
 	   if(robot.motor_ground[i].value == SOURCE) then
-	      in_source = in_source + 1
+	      	in_source = in_source + 1
 	    end
 	end
 	return in_source == 4
@@ -131,17 +123,17 @@ end
 
 function drive_to_target()
 	BLUE_TARGET = get_blue_target()
-   if (BLUE_TARGET.distance < math.maxinteger) then
-      BLUE = BLUE_TARGET.blue - 1
+   	if (BLUE_TARGET.distance < math.maxinteger) then
+      	BLUE = BLUE_TARGET.blue - 1
 		if (BLUE < 0) then
 			BLUE = 0
 		end
       	drive_to_blue_target()
-   else
+   	else
 		BLUE = 255
-      drive(SPEED, 0)
-   end
-	drive(SPEED, robot.random.uniform_int(0, 0))
+      	drive(SPEED, 0)
+   	end
+	drive(SPEED, 0)
 end
 
 -- Returns the distance, angle and blue value of the closest red obstacle
@@ -182,13 +174,6 @@ function grab_and_remove_obstacle()
 			end
 		end
 	end
-	-- check if obstacle is in front: check if red is in front with distance < 19 (check exact)
-	-- if true: stop the robot
-	-- 			put the turret at the angle of the obstacle
-	--				grab the obstacle
-	--				put the turret at the opposite of the angle
-	--				release the obstacle
-	--				drive again
 end
 
 --[[ This function is executed at each time step
@@ -196,24 +181,24 @@ end
 function step()
     if (is_in_source()) then
         drive_out_of_the_source()
-		  robot.leds.set_single_color(13, RED, GREEN, BLUE)
+		robot.leds.set_single_color(13, RED, GREEN, BLUE)
     else
-			grab_and_remove_obstacle()
-			if (not GRABBING) then
-				robot.leds.set_single_color(13, 0, 0, 0)
-	 	  		if (is_in_target()) then
-					GREEN = 255
-					BLUE = 255
-	        		robot.leds.set_all_colors(RED, GREEN, BLUE)
-		  		else
-			   	BLUE = 0
-					drive_to_target()
-					GREEN = 0
-					robot.leds.set_single_color(6, RED, GREEN, BLUE)
-					robot.leds.set_single_color(7, RED, GREEN, BLUE)
-				end
-		  end
-    end
+		grab_and_remove_obstacle()
+		if (not GRABBING) then
+			robot.leds.set_single_color(13, 0, 0, 0)
+ 	  		if (is_in_target()) then
+				GREEN = 255
+				BLUE = 255
+        		robot.leds.set_all_colors(RED, GREEN, BLUE)
+	  		else
+		   		BLUE = 0
+				drive_to_target()
+				GREEN = 0
+				robot.leds.set_single_color(6, RED, GREEN, BLUE)
+				robot.leds.set_single_color(7, RED, GREEN, BLUE)
+			end
+		end
+	end
 end
 
 
